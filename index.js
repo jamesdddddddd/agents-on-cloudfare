@@ -4,7 +4,7 @@ export default {
   async fetch(request, env, ctx) {
     // 1. Define the AI Model (Sentiment Classification)
     // This model is fine-tuned to classify text as POSITIVE or NEGATIVE
-    const model = '@cf/distilbert-base-uncased-finetuned-sst-2-english';
+    const model = '@cf/distilbert-sst-2';
 
     // 2. Define the Text to Analyze
     // This is the input that simulates a user comment or message.
