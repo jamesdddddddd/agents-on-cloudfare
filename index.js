@@ -1,28 +1,37 @@
 // index.js
 
 export default {
-  // The fetch function is the entry point for all incoming requests
   async fetch(request, env, ctx) {
-    // 1. Define the AI Model and the prompt/message
-    // We use a powerful but fast language model here
-    const model = '@cf/meta/llama-2-7b-chat-int8';
-    
-    // The messages array holds the conversation history for the AI
-    const messages = [
-      { role: "system", content: "You are a witty, helpful AI assistant that is excited about Cloudflare Workers." },
-      { role: "user", content: "Tell me a short, friendly message for a new user." }
-    ];
+    // 1. Define the AI Model (Sentiment Classification)
+    // This model is fine-tuned to classify text as POSITIVE or NEGATIVE
+    const model = '@cf/huggingface/distilbert-base-uncased-finetuned-sst-2-english';
+
+    // 2. Define the Text to Analyze
+    // This is the input that simulates a user comment or message.
+    const input_text = "I love how fast this Cloudflare Worker is!";
+
+    // Define the inputs object for the model
+    const inputs = {
+      text: input_text
+    };
 
     try {
-      // 2. Execute the AI model using the binding named 'AI' (defined in wrangler.toml)
-      const response = await env.AI.run(model, { messages });
-      
-      // 3. Extract the text response from the model's output
-      const aiMessage = response.response;
+      // 3. Call the Workers AI service (bound as 'AI' in wrangler.toml)
+      // The model returns an array of classification results.
+      const response = await env.AI.run(model, inputs);
 
-      // 4. Return the AI's response to the user's browser
-      return new Response(`AI says: ${aiMessage}`, {
-        headers: { 'Content-Type': 'text/plain' },
+      // The output is an array. We access the first and most confident result.
+      const result = response[0];
+      const sentiment = result.label; // e.g., "POSITIVE"
+      const confidence = (result.score * 100).toFixed(2); // e.g., 99.85
+
+      // 4. Return the classification result as a JSON response
+      return new Response(JSON.stringify({
+        input: input_text,
+        sentiment: sentiment,
+        confidence: `${confidence}%`
+      }), {
+        headers: { 'Content-Type': 'application/json' },
       });
       
     } catch (e) {
