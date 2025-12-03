@@ -6,5 +6,5 @@ compatibility_date = "2024-05-01"   # Required for modern Workers features
 
 # --- AI Application Specific Binding ---
 # This line creates a binding named 'AI' that gives your Worker access to the Workers AI service.
-[[ai]]
+[ai]
 binding = "AI"
