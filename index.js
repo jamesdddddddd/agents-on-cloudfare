@@ -8,7 +8,7 @@ export default {
 
     // 2. Define the Text to Analyze
     // This is the input that simulates a user comment or message.
-    const input_text = "I love how fast this Cloudflare Worker is!";
+    const input_text = "The weather makes me sad today.";
 
     // Define the inputs object for the model
     const inputs = {
