@@ -24,16 +24,7 @@ export default {
       const result = response[0];
       const sentiment = result.label; // e.g., "POSITIVE"
       const confidence = (result.score * 100).toFixed(2); // e.g., 99.85
-
-      // 4. Return the classification result as a JSON response
-      return new Response(JSON.stringify({
-        input: input_text,
-        sentiment: sentiment,
-        confidence: `${confidence}%`
-      }), {
-        headers: { 'Content-Type': 'application/json' },
-      });
-    // index.js
+          // index.js
 
 // ... (everything before the final return statement) ...
 
