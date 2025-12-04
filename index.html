@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sentiment Moderator App</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+        h1 { color: #f36c34; }
+        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background-color: #f36c34; color: white; padding: 10px 15px; border: none; cursor: pointer; }
+        #output { border: 1px solid #ddd; padding: 15px; margin-top: 20px; white-space: pre-wrap; background-color: #f9f9f9; }
+        .positive { color: green; font-weight: bold; }
+        .negative { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Serverless Sentiment Moderator</h1>
+    <p>Enter a sentence below to analyze its sentiment in real-time on the Cloudflare Edge.</p>
+    
+    <input type="text" id="sentenceInput" placeholder="Enter your sentence here...">
+    <button onclick="analyzeSentiment()">Analyze</button>
+    
+    <h2>Result:</h2>
+    <div id="output">Submit a sentence to see the analysis...</div>
+
+    <script src="app.js"></script>
+</body>
+</html>
