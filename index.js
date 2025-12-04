@@ -24,7 +24,20 @@ export default {
       const result = response[0];
       const sentiment = result.label; // e.g., "POSITIVE"
       const confidence = (result.score * 100).toFixed(2); // e.g., 99.85
-          // index.js
+
+      //Below code will fix the problem that the worker would return "NEGATIVE" sentiment everytime
+      //  By swapping the label and reversing the confidence number
+      if (raw_score < 0.5) {
+    // 1. Recalculate the confidence based on the correct (opposite) label
+    confidence = ((1 - raw_score) * 100).toFixed(2);
+    
+    // 2. Invert the label name
+    if (sentiment === 'POSITIVE') {
+        sentiment = 'NEGATIVE';
+    } else {
+        sentiment = 'POSITIVE';
+    }
+}
 
 // ... (everything before the final return statement) ...
 
