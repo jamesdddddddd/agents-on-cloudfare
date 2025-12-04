@@ -1,7 +1,7 @@
 // app.js
 
 // the worker live url
-const WORKER_URL = "https://agents-on-cloudfare.jamie-jj-jd.workers.dev/"; 
+const WORKER_URL = "@cf/huggingface/distilbert-sst-2-int8"; 
 
 async function analyzeSentiment() {
     const inputElement = document.getElementById('sentenceInput');
