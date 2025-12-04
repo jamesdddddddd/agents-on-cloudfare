@@ -33,6 +33,24 @@ export default {
       }), {
         headers: { 'Content-Type': 'application/json' },
       });
+    // index.js
+
+// ... (everything before the final return statement) ...
+
+      // 5. Return the dynamic classification result
+      return new Response(JSON.stringify({
+        input: input_text,
+        sentiment: sentiment,
+        confidence: `${confidence}%`
+      }), {
+        // *** ADD THESE CORS HEADERS ***
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',  // Allows access from ANY domain
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      });
       
     } catch (e) {
       console.error(e);

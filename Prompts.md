@@ -6,3 +6,8 @@ used AI prompts to help me decide the right model to use, although this eventual
 
 
 how can i take user input through a text box on the site, since currently the only way to input something is by editing the url
+
+
+but when i enter text i get the error "cant connect to worker"
+
+
