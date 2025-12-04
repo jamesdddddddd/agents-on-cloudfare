@@ -2,55 +2,63 @@
 
 export default {
   async fetch(request, env, ctx) {
-    // 1. Define the AI Model (Sentiment Classification)
-    // This model is fine-tuned to classify text as POSITIVE or NEGATIVE
-    const model = '@cf/huggingface/distilbert-sst-2-int8';
+    // 1. Define the AI Model (Using your last known working identifier)
+    const model = '@cf/huggingface/distilbert-sst-2-int8'; 
 
-    //change the hard coded text into text the user can enter
     const url = new URL(request.url);
     const input_text = url.searchParams.get('text');
 
-    // Define the inputs object for the model
+    // Handle missing input (Needed for front-end structure)
+    if (!input_text) {
+      return new Response(JSON.stringify({
+        error: "Missing 'text' parameter in the URL. Usage: /?text=I am happy to be here!"
+      }), {
+        status: 400,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*', // CORS for front-end access
+        },
+      });
+    }
+
     const inputs = {
       text: input_text
     };
 
     try {
-      // 3. Call the Workers AI service (bound as 'AI' in wrangler.toml)
-      // The model returns an array of classification results.
+      // 3. Call the Workers AI service
       const response = await env.AI.run(model, inputs);
 
-      // The output is an array. We access the first and most confident result.
       const result = response[0];
-      const sentiment = result.label; // e.g., "POSITIVE"
-      const confidence = (result.score * 100).toFixed(2); // e.g., 99.85
+      let sentiment = result.label;
+      
+      // *** FIX 1: Define raw_score and confidence correctly ***
+      const raw_score = result.score;
+      let confidence = (raw_score * 100).toFixed(2); 
 
-      //Below code will fix the problem that the worker would return "NEGATIVE" sentiment everytime
-      //  By swapping the label and reversing the confidence
-      if (confidence < 0.5) {
-    // 1. Recalculate the confidence based on the correct (opposite) label
-    confidence = ((1 - raw_score) * 100).toFixed(2);
-    
-    // 2. Invert the label name
-    if (sentiment === 'POSITIVE') {
-        sentiment = 'NEGATIVE';
-    } else {
-        sentiment = 'POSITIVE';
-    }
-}
+      // 4. *** FIX 2: Correct Label Swapping Logic ***
+      // This corrects the issue of the model returning the wrong label name (e.g., NEGATIVE for high confidence POSITIVE)
+      if (raw_score < 0.5) {
+          // If raw score is low, invert both label and confidence value
+          confidence = ((1 - raw_score) * 100).toFixed(2);
+          
+          if (sentiment === 'POSITIVE') {
+              sentiment = 'NEGATIVE';
+          } else {
+              sentiment = 'POSITIVE';
+          }
+      }
 
-// ... (everything before the final return statement) ...
-
-      // 5. Return the dynamic classification result
+      // 5. Final Return: Includes the processed result and the necessary CORS headers
       return new Response(JSON.stringify({
         input: input_text,
         sentiment: sentiment,
         confidence: `${confidence}%`
       }), {
-        // *** ADD THESE CORS HEADERS ***
+        // *** CRITICAL FIX: CORS HEADERS ARE REACHABLE HERE ***
         headers: { 
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',  // Allows access from ANY domain
+          'Access-Control-Allow-Origin': '*',  // Allows access from Pages site
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type',
         },
@@ -58,8 +66,17 @@ export default {
       
     } catch (e) {
       console.error(e);
-      return new Response(`AI Inference Error: ${e.message}`, { status: 500 });
+      // Ensure the error response also includes CORS headers
+      return new Response(JSON.stringify({
+          error: "AI Inference Failed",
+          detail: e.message
+      }), { 
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+      });
     }
   },
 };
-
