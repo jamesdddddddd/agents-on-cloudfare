@@ -20,7 +20,14 @@ export default {
       // The model returns an array of classification results.
       const response = await env.AI.run(model, inputs);
 
-            if (raw_score < 0.5) {
+      // The output is an array. We access the first and most confident result.
+      const result = response[0];
+      const sentiment = result.label; // e.g., "POSITIVE"
+      const confidence = (result.score * 100).toFixed(2); // e.g., 99.85
+
+      //Below code will fix the problem that the worker would return "NEGATIVE" sentiment everytime
+      //  By swapping the label and reversing the confidence
+      if (confidence < 0.5) {
     // 1. Recalculate the confidence based on the correct (opposite) label
     confidence = ((1 - raw_score) * 100).toFixed(2);
     
@@ -30,15 +37,6 @@ export default {
     } else {
         sentiment = 'POSITIVE';
     }
-
-      // The output is an array. We access the first and most confident result.
-      //const result = response[0];
-      //const sentiment = result.label; // e.g., "POSITIVE"
-      //const confidence = (result.score * 100).toFixed(2); // e.g., 99.85
-
-      //Below code will fix the problem that the worker would return "NEGATIVE" sentiment everytime
-      //  By swapping the label and reversing the confidence number
-
 }
 
 // ... (everything before the final return statement) ...
