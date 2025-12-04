@@ -6,9 +6,9 @@ export default {
     // This model is fine-tuned to classify text as POSITIVE or NEGATIVE
     const model = '@cf/huggingface/distilbert-sst-2-int8';
 
-    // 2. Define the Text to Analyze
-    // This is the input that simulates a user comment or message.
-    const input_text = "I love Cloudfare!!";
+    //change the hard coded text into text the user can enter
+    const url = new URL(request.url);
+    const input_text = url.searchParams.get('text');
 
     // Define the inputs object for the model
     const inputs = {
